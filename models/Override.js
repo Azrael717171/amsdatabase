@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const overrideSchema = new mongoose.Schema({
   branch: { type: String, required: true },
   department: { type: String, required: true },
-  employee: { type: String, required: true },
+  employee: { type: String, required: false },
   nature: { type: String, required: true },
   date: { type: Date, required: true },
   time: { type: String, required: true },
