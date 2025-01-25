@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const Override = require('./models/Override')
+const Override = require('./models/Override');
 const app = express();
 
 // Middleware setup
@@ -10,12 +10,13 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/timeOverride', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.log('Failed to connect to MongoDB', err));
+mongoose
+  .connect('mongodb://localhost:27017/timeOverride', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log('Failed to connect to MongoDB', err));
 
 // Routes
 
@@ -34,9 +35,28 @@ app.post('/overrides', async (req, res) => {
   try {
     const newOverride = new Override(req.body);
     await newOverride.save();
-    res.status(201).json({ message: 'Override added successfully', override: newOverride });
+    res
+      .status(201)
+      .json({ message: 'Override added successfully', override: newOverride });
   } catch (err) {
     res.status(400).json({ message: 'Error adding override', error: err });
+  }
+});
+
+// Update an override
+app.put('/overrides/:id', async (req, res) => {
+  try {
+    const override = await Override.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true } // Return the updated document
+    );
+    if (!override) {
+      return res.status(404).json({ message: 'Override not found' });
+    }
+    res.json({ message: 'Override updated successfully', override });
+  } catch (err) {
+    res.status(400).json({ message: 'Error updating override', error: err });
   }
 });
 
